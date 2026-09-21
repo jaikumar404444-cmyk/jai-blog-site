@@ -1,0 +1,28 @@
+---
+import { navigation, site } from '../data/site';
+---
+
+<footer class="site-footer">
+	<div class="footer-inner">
+		<div class="footer-main">
+			<div>
+				<p class="eyebrow">{site.name} / Independent publication</p>
+				<p class="footer-statement">A place for work that rewards a second reading.</p>
+			</div>
+			<div>
+				<p class="eyebrow">Navigate</p>
+				<ul class="footer-list">
+					{navigation.map((item) => <li><a class="footer-link" href={item.href}>{item.label}</a></li>)}
+				</ul>
+			</div>
+			<div>
+				<p class="eyebrow">Publication note</p>
+				<p class="body-m">A static, reader-first journal built for essays, research, observations, and visual studies.</p>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<span>© {new Date().getFullYear()} {site.name}</span>
+			<span>Made for unhurried reading.</span>
+		</div>
+	</div>
+</footer>

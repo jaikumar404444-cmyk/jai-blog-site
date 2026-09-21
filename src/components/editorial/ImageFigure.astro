@@ -1,0 +1,30 @@
+---
+interface Props {
+	src: string;
+	alt: string;
+	caption?: string;
+	credit?: string;
+	fullBleed?: boolean;
+}
+
+const { src, alt, caption, credit, fullBleed = false } = Astro.props;
+---
+
+<figure class:list={['image-figure', { 'image-figure--full': fullBleed }]}>
+	<img src={src} alt={alt} loading="lazy" />
+	{(caption || credit) && (
+		<figcaption>
+			{caption && <span>{caption}</span>}
+			{credit && <span class="image-credit">{credit}</span>}
+		</figcaption>
+	)}
+</figure>
+
+<style>
+	.image-figure { margin: clamp(2.5rem, 6vw, 5rem) 0; }
+	.image-figure--full { width: min(100vw, 90rem); margin-inline: 50%; transform: translateX(-50%); }
+	.image-figure img { width: 100%; background: var(--color-surface); }
+	figcaption { display: flex; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); color: var(--color-muted); font-size: 0.72rem; line-height: 1.45; }
+	.image-credit { flex: none; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+	@media (max-width: 38rem) { figcaption { flex-direction: column; gap: var(--space-1); } }
+</style>

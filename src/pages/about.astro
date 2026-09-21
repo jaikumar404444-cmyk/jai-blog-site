@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About" description="About the JAI editorial journal and the first-version publication system.">
+	<section class="about-hero page-frame" aria-labelledby="about-title">
+		<p class="eyebrow">About the publication</p>
+		<h1 id="about-title" class="display-l">A place to keep looking.</h1>
+		<p class="body-l">JAI is being built as a personal publication with the editorial presence of a journal: considered, readable, curious, and quietly distinct.</p>
+	</section>
+
+	<section class="about-statement page-frame" aria-labelledby="statement-title">
+		<div class="about-statement__label">
+			<p class="eyebrow">Editorial premise</p>
+			<span class="meta">01 / 03</span>
+		</div>
+		<div>
+			<h2 id="statement-title" class="heading-l">The work comes first. The system stays out of its way.</h2>
+			<p class="body-m">The publication is designed to hold essays, research, analysis, visual work, and experiments without forcing every entry through one visual template. Structure helps the collection grow; editorial judgement gives it a point of view.</p>
+		</div>
+	</section>
+
+	<section class="about-grid page-frame" aria-label="Publication principles">
+		<div>
+			<p class="eyebrow">Reading</p>
+			<h2 class="heading-m">Unhurried by default.</h2>
+			<p class="body-m">Long-form reading, careful hierarchy, and useful context take precedence over attention-grabbing interface patterns.</p>
+		</div>
+		<div>
+			<p class="eyebrow">Form</p>
+			<h2 class="heading-m">One system, many expressions.</h2>
+			<p class="body-m">A story can be text-led, visual, research-driven, or deliberately unusual without losing its place in the publication.</p>
+		</div>
+		<div>
+			<p class="eyebrow">Status</p>
+			<h2 class="heading-m">A transparent demo edition.</h2>
+			<p class="body-m">Personal biography, external links, and final writing have intentionally not been invented. The current sample content exists to demonstrate the publishing system.</p>
+		</div>
+	</section>
+
+	<section class="about-next page-frame" aria-labelledby="next-title">
+		<p class="eyebrow">Next</p>
+		<h2 id="next-title" class="display-m">Final writing and an owner-approved statement can replace this demo content without changing the architecture.</h2>
+		<a class="text-link" href="/writing">Browse the demo collection</a>
+	</section>
+</Layout>
+
+<style>
+	.about-hero { padding-top: var(--space-6); }
+	.about-hero h1 { max-width: 62rem; margin-top: var(--space-3); }
+	.about-hero .body-l { max-width: 46rem; margin: var(--space-5) 0 0; }
+	.about-statement { display: grid; grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr); gap: var(--space-5); margin-top: var(--space-6); padding-block: var(--space-5); border-block: var(--rule); }
+	.about-statement__label { display: flex; justify-content: space-between; gap: var(--space-2); }
+	.about-statement__label p, .about-statement h2, .about-statement .body-m { margin: 0; }
+	.about-statement > div:last-child { display: grid; gap: var(--space-4); max-width: 50rem; }
+	.about-statement .body-m { max-width: 38rem; }
+	.about-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-6); }
+	.about-grid > div { display: grid; align-content: start; gap: var(--space-2); padding-top: var(--space-3); border-top: var(--rule); }
+	.about-grid p { margin: 0; }
+	.about-next { max-width: 62rem; margin-top: var(--space-6); }
+	.about-next h2 { margin-top: var(--space-3); }
+	.about-next .text-link { margin-top: var(--space-4); }
+	@media (max-width: 52rem) { .about-statement { grid-template-columns: 1fr; gap: var(--space-3); } .about-statement__label { max-width: 16rem; } .about-grid { grid-template-columns: 1fr; gap: var(--space-4); } }
+</style>

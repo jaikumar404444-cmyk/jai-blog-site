@@ -1,0 +1,45 @@
+<button class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Switch to dark theme">
+	<svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+		<path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M18.36 5.64l-1.42 1.42M7.06 16.94l-1.42 1.42" />
+		<circle cx="12" cy="12" r="4" />
+	</svg>
+	<svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+		<path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z" />
+	</svg>
+</button>
+
+<script>
+	const controls = document.querySelectorAll('.theme-toggle');
+
+	function updateControls(theme: string) {
+		controls.forEach((control) => {
+			const isDark = theme === 'dark';
+			control.setAttribute('aria-pressed', String(isDark));
+			const label = `Switch to ${isDark ? 'light' : 'dark'} theme`;
+			control.setAttribute('aria-label', label);
+			control.setAttribute('title', label);
+		});
+	}
+
+	function setTheme(theme: string) {
+		document.documentElement.dataset.theme = theme;
+		try {
+			localStorage.setItem('jai-theme', theme);
+		} catch {}
+		updateControls(theme);
+	}
+
+	updateControls(document.documentElement.dataset.theme || 'light');
+
+	controls.forEach((control) => {
+		control.addEventListener('click', () => {
+			const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+			const motionIsReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (!motionIsReduced && 'startViewTransition' in document) {
+				document.startViewTransition(() => setTheme(nextTheme));
+			} else {
+				setTheme(nextTheme);
+			}
+		});
+	});
+</script>

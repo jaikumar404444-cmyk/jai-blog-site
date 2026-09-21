@@ -1,0 +1,198 @@
+---
+interface SearchItem {
+	title: string;
+	description: string;
+	type: string;
+	topic: string;
+	url: string;
+	date: string;
+}
+
+interface Props {
+	items: SearchItem[];
+}
+
+const { items } = Astro.props;
+const serializedIndex = JSON.stringify(items).replace(/</g, '\\u003c');
+const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic]))].slice(0, 5);
+---
+
+<section class="search-interface" data-search-interface aria-label="Search writing">
+	<form class="search-form" role="search">
+		<label class="visually-hidden" for="site-search">Search the publication</label>
+		<input id="site-search" name="q" type="search" placeholder="Search titles, topics, or formats" autocomplete="off" enterkeyhint="search" aria-describedby="search-status" />
+		<button class="search-clear" type="button" disabled>Clear search</button>
+	</form>
+	<p id="search-status" class="search-status" aria-live="polite">Search the demo collection by title, description, type, or topic.</p>
+	<div class="search-guidance" data-search-guidance>
+		<p class="meta">Explore from a starting point</p>
+		<div class="search-suggestions">
+			{suggestions.map((suggestion) => <button type="button" data-search-suggestion={suggestion}>{suggestion}</button>)}
+		</div>
+	</div>
+	<div class="search-results" aria-live="polite"></div>
+	<noscript>
+		<p class="search-noscript">Search needs JavaScript in this static first version. You can still browse every piece on the <a href="/writing">Writing page</a>.</p>
+	</noscript>
+	<script id="search-index" type="application/json" set:html={serializedIndex}></script>
+</section>
+
+<script>
+	const root = document.querySelector('[data-search-interface]');
+
+	if (root instanceof HTMLElement) {
+		const input = root.querySelector<HTMLInputElement>('input');
+		const form = root.querySelector<HTMLFormElement>('form');
+		const clear = root.querySelector<HTMLButtonElement>('.search-clear');
+		const status = root.querySelector<HTMLElement>('.search-status');
+		const results = root.querySelector<HTMLElement>('.search-results');
+		const guidance = root.querySelector<HTMLElement>('[data-search-guidance]');
+		const suggestions = root.querySelectorAll<HTMLButtonElement>('[data-search-suggestion]');
+		const indexElement = root.querySelector<HTMLScriptElement>('#search-index');
+
+		if (input && form && clear && status && results && indexElement?.textContent) {
+			const searchInput = input;
+			const searchForm = form;
+			const clearButton = clear;
+			const statusMessage = status;
+			const resultsRegion = results;
+			const searchIndex = indexElement;
+			const index = JSON.parse(searchIndex.textContent) as Array<{
+				title: string;
+				description: string;
+				type: string;
+				topic: string;
+				url: string;
+				date: string;
+			}>;
+
+			function updateUrl(query: string) {
+				const url = new URL(window.location.href);
+				if (query) url.searchParams.set('q', query);
+				else url.searchParams.delete('q');
+				url.searchParams.delete('focus');
+				if (url.href !== window.location.href) window.history.replaceState({}, '', url);
+			}
+
+			function createResult(item: (typeof index)[number]) {
+				const article = document.createElement('article');
+				article.className = 'search-result';
+				const meta = document.createElement('p');
+				meta.className = 'search-result__meta';
+				meta.textContent = `${item.type} · ${item.topic} · ${item.date}`;
+				const heading = document.createElement('h2');
+				const link = document.createElement('a');
+				link.href = item.url;
+				link.textContent = item.title;
+				heading.append(link);
+				const description = document.createElement('p');
+				description.textContent = item.description;
+				article.append(meta, heading, description);
+				return article;
+			}
+
+			function render(query: string) {
+				const normalised = query.trim().toLowerCase();
+				resultsRegion.replaceChildren();
+				clearButton.disabled = !normalised;
+				clearButton.hidden = !normalised;
+				guidance?.toggleAttribute('hidden', Boolean(normalised));
+
+				if (!normalised) {
+					statusMessage.textContent = 'Search the demo collection by title, description, type, or topic.';
+					updateUrl('');
+					return;
+				}
+
+				const matched = index
+					.map((item) => {
+						const title = item.title.toLowerCase();
+						const type = item.type.toLowerCase();
+						const topic = item.topic.toLowerCase();
+						const description = item.description.toLowerCase();
+						const score = (title.includes(normalised) ? 4 : 0) + (topic.includes(normalised) ? 3 : 0) + (type.includes(normalised) ? 2 : 0) + (description.includes(normalised) ? 1 : 0);
+						return { item, score };
+					})
+					.filter(({ score }) => score > 0)
+					.sort((first, second) => second.score - first.score)
+					.map(({ item }) => item);
+
+				statusMessage.textContent = matched.length ? `${matched.length} ${matched.length === 1 ? 'result' : 'results'} for “${query.trim()}”` : `No results for “${query.trim()}”`;
+				if (matched.length) {
+					matched.forEach((item) => resultsRegion.append(createResult(item)));
+				} else {
+					const empty = document.createElement('p');
+					empty.className = 'search-no-results';
+					empty.textContent = 'Try a broader topic, a format, or clear the search to begin again.';
+					resultsRegion.append(empty);
+				}
+				updateUrl(query.trim());
+			}
+
+			searchForm.addEventListener('submit', (event) => event.preventDefault());
+			searchInput.addEventListener('input', () => render(searchInput.value));
+			searchInput.addEventListener('keydown', (event) => {
+				if (event.key !== 'Escape') return;
+				if (searchInput.value) {
+					searchInput.value = '';
+					render('');
+				} else {
+					searchInput.blur();
+				}
+			});
+			clearButton.addEventListener('click', () => {
+				searchInput.value = '';
+				render('');
+				searchInput.focus();
+			});
+			suggestions.forEach((suggestion) => {
+				suggestion.addEventListener('click', () => {
+					searchInput.value = suggestion.dataset.searchSuggestion || '';
+					render(searchInput.value);
+					searchInput.focus();
+				});
+			});
+			window.addEventListener('keydown', (event) => {
+				const target = event.target;
+				const isTyping = target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]');
+				if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping) {
+					event.preventDefault();
+					searchInput.focus();
+				}
+			});
+
+			const parameters = new URLSearchParams(window.location.search);
+			const initialQuery = parameters.get('q') || '';
+			searchInput.value = initialQuery;
+			render(initialQuery);
+			if (parameters.has('focus')) window.requestAnimationFrame(() => searchInput.focus());
+		}
+	}
+</script>
+
+<style>
+	.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+	.search-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); padding-bottom: var(--space-3); border-bottom: 2px solid var(--color-ink); transition: border-color var(--motion-quick); }
+	.search-form:focus-within { border-color: var(--color-accent); }
+	.search-form input { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 3.25rem); font-weight: 420; letter-spacing: -0.052em; }
+	.search-form input::placeholder { color: var(--color-faint); opacity: 1; }
+	.search-clear { align-self: center; min-height: 2.75rem; border: 0; background: transparent; color: var(--color-accent); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+	.search-clear:hover, .search-clear:focus-visible { color: var(--color-ink); }
+	.search-status { margin: var(--space-3) 0 0; color: var(--color-muted); font-size: 0.84rem; }
+	.search-guidance { margin-top: var(--space-5); }
+	.search-guidance > p { margin: 0 0 var(--space-2); }
+	.search-suggestions { display: flex; flex-wrap: wrap; gap: 0 var(--space-3); }
+	.search-suggestions button { min-height: 2.4rem; padding: 0; border: 0; border-bottom: 1px solid var(--color-rule); background: transparent; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.55rem); font-weight: 420; letter-spacing: -0.03em; text-align: left; transition: border-color var(--motion-quick), color var(--motion-quick); }
+	.search-suggestions button:hover, .search-suggestions button:focus-visible { border-color: var(--color-accent); color: var(--color-accent); }
+	.search-results { margin-top: var(--space-5); }
+	.search-results:not(:empty) { border-bottom: var(--rule); }
+	.search-noscript { margin-top: var(--space-4); color: var(--color-muted); }
+	:global(.search-result) { display: grid; grid-template-columns: minmax(10rem, 0.35fr) 1fr; gap: var(--space-3); padding-block: var(--space-3); border-top: var(--rule); }
+	:global(.search-result__meta) { margin: 0; color: var(--color-muted); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
+	:global(.search-result h2) { margin: 0; font-family: var(--font-display); font-size: clamp(1.45rem, 2.5vw, 2.4rem); font-weight: 400; letter-spacing: -0.045em; line-height: 1; }
+	:global(.search-result h2 a) { text-decoration: none; }
+	:global(.search-result h2 a:hover), :global(.search-result h2 a:focus-visible) { color: var(--color-accent); }
+	:global(.search-result > p:last-child) { grid-column: 2; margin: var(--space-1) 0 0; color: var(--color-muted); font-size: 0.92rem; line-height: 1.55; }
+	:global(.search-no-results) { margin: 0; padding: var(--space-4) 0; border-top: var(--rule); color: var(--color-muted); font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.55rem); letter-spacing: -0.025em; }
+	@media (max-width: 38rem) { .search-suggestions { display: grid; grid-template-columns: 1fr; gap: var(--space-1); } :global(.search-result) { grid-template-columns: 1fr; gap: var(--space-2); } :global(.search-result > p:last-child) { grid-column: auto; } }
+</style>

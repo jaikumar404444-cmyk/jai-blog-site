@@ -1,0 +1,31 @@
+---
+import SearchInterface from '../components/SearchInterface.astro';
+import Layout from '../layouts/Layout.astro';
+import { articleTypes } from '../data/site';
+import { formatDate, getPublishedArticles } from '../utils/articles';
+
+const articles = await getPublishedArticles();
+const searchItems = articles.map((article) => ({
+	title: article.data.title,
+	description: article.data.description,
+	type: articleTypes[article.data.type],
+	topic: article.data.topic,
+	url: `/writing/${article.data.slug}`,
+	date: formatDate(article.data.date),
+}));
+---
+
+<Layout title="Search" description="Search the JAI publication by title, description, type, or topic.">
+	<section class="search-page page-frame" aria-labelledby="search-title">
+		<p class="eyebrow">Find a way in</p>
+		<h1 id="search-title" class="display-l">Search</h1>
+		<p class="body-l">Search across the current demo collection. Results update as you type.</p>
+		<SearchInterface items={searchItems} />
+	</section>
+</Layout>
+
+<style>
+	.search-page { max-width: 82rem; padding-top: var(--space-6); }
+	.search-page h1 { margin-top: var(--space-3); }
+	.search-page > .body-l { max-width: 40rem; margin: var(--space-4) 0 var(--space-5); }
+</style>

@@ -1,0 +1,26 @@
+---
+import type { Article } from '../utils/articles';
+import { articleTypes } from '../data/site';
+import { formatDate, readingTime } from '../utils/articles';
+
+interface Props {
+	article: Article;
+	includeReadingTime?: boolean;
+}
+
+const { article, includeReadingTime = true } = Astro.props;
+const { data } = article;
+---
+
+<div class="article-meta">
+	<span class="article-type">{articleTypes[data.type]}</span>
+	<span class="meta">{data.topic}</span>
+	<span class="meta">{formatDate(data.date)}</span>
+	{includeReadingTime && <span class="meta">{readingTime(article)} min read</span>}
+</div>
+
+<style>
+	.article-meta { display: flex; flex-wrap: wrap; gap: 0.55rem 0.9rem; align-items: center; }
+	.article-meta span:not(:first-child)::before { content: '·'; margin-right: 0.9rem; color: var(--color-rule); }
+	@media (max-width: 34rem) { .article-meta { gap: 0.5rem; } .article-meta span:not(:first-child)::before { margin-right: 0.5rem; } }
+</style>

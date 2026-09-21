@@ -1,0 +1,33 @@
+---
+interface Image {
+	src: string;
+	alt: string;
+	caption?: string;
+	credit?: string;
+}
+
+interface Props {
+	images: Image[];
+}
+
+const { images } = Astro.props;
+---
+
+<div class="image-gallery" aria-label="Image sequence">
+	{images.map((image) => (
+		<figure>
+			<img src={image.src} alt={image.alt} loading="lazy" />
+			{(image.caption || image.credit) && <figcaption>{image.caption}{image.credit && <span>{image.credit}</span>}</figcaption>}
+		</figure>
+	))}
+</div>
+
+<style>
+	.image-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: clamp(3rem, 7vw, 6rem) 0; }
+	.image-gallery figure { margin: 0; }
+	.image-gallery figure:nth-child(3n) { grid-column: span 2; }
+	.image-gallery img { width: 100%; background: var(--color-surface); }
+	figcaption { display: flex; justify-content: space-between; gap: var(--space-2); margin-top: var(--space-2); color: var(--color-muted); font-size: 0.7rem; line-height: 1.4; }
+	figcaption span { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+	@media (max-width: 38rem) { .image-gallery { grid-template-columns: 1fr; } .image-gallery figure:nth-child(3n) { grid-column: auto; } }
+</style>

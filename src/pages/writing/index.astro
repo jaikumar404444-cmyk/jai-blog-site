@@ -1,0 +1,60 @@
+---
+import EditorialTile from '../../components/EditorialTile.astro';
+import FeatureStory from '../../components/FeatureStory.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getPublishedArticles } from '../../utils/articles';
+
+const articles = await getPublishedArticles();
+const lead = articles.at(0);
+
+if (!lead) {
+	throw new Error('The writing page needs at least one published article.');
+}
+
+const remaining = articles.slice(1);
+const topics = [...new Set(articles.map((article) => article.data.topic))];
+---
+
+<Layout title="Writing" description="Browse the JAI demo collection of essays, research, analysis, visual essays, and experiments.">
+	<section class="writing-intro page-frame" aria-labelledby="writing-title">
+		<p class="eyebrow">The collection / demo content</p>
+		<h1 id="writing-title" class="display-l">Writing</h1>
+		<div class="writing-intro__lower">
+			<p class="body-l">A growing body of work, arranged for wandering as much as for finding.</p>
+			<p class="meta">{articles.length} published demo pieces · {topics.join(' · ')}</p>
+		</div>
+	</section>
+
+	<section class="writing-lead page-frame" aria-labelledby="latest-title">
+		<p id="latest-title" class="eyebrow">Latest entry</p>
+		<FeatureStory article={lead} priority />
+	</section>
+
+	<section class="writing-grid page-frame" aria-labelledby="all-writing-title">
+		<div class="writing-grid__heading">
+			<p class="eyebrow">All published work</p>
+			<h2 id="all-writing-title" class="heading-l">Browse the collection.</h2>
+		</div>
+		<div class="writing-grid__items">
+			{remaining.map((article, index) => <EditorialTile article={article} imagePosition={index % 2 === 0 ? 'top' : 'bottom'} />)}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.writing-intro { padding-top: var(--space-6); }
+	.writing-intro h1 { margin-top: var(--space-3); }
+	.writing-intro__lower { display: flex; justify-content: space-between; gap: var(--space-5); align-items: end; margin-top: var(--space-5); padding-top: var(--space-3); border-top: var(--rule); }
+	.writing-intro__lower p { margin: 0; }
+	.writing-intro__lower .body-l { max-width: 39rem; }
+	.writing-intro__lower .meta { max-width: 18rem; text-align: right; line-height: 1.55; }
+	.writing-lead { margin-top: var(--space-6); }
+	.writing-lead > .eyebrow { margin: 0 0 var(--space-3); }
+	.writing-grid { margin-top: var(--space-6); }
+	.writing-grid__heading { display: flex; justify-content: space-between; gap: var(--space-4); align-items: end; padding-bottom: var(--space-4); border-bottom: var(--rule); }
+	.writing-grid__heading p { margin: 0; }
+	.writing-grid__items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(2rem, 5vw, 5rem) clamp(1.5rem, 4vw, 4.5rem); margin-top: var(--space-5); }
+	.writing-grid__items > :nth-child(3n + 2) { margin-top: clamp(2rem, 8vw, 7rem); }
+	@media (max-width: 52rem) { .writing-intro__lower { align-items: start; flex-direction: column; } .writing-intro__lower .meta { max-width: none; text-align: left; } .writing-grid__items { grid-template-columns: repeat(2, minmax(0, 1fr)); } .writing-grid__items > :nth-child(3n + 2) { margin-top: 0; } .writing-grid__items > :nth-child(2n) { margin-top: var(--space-5); } }
+	@media (max-width: 36rem) { .writing-grid__heading { align-items: start; flex-direction: column; } .writing-grid__items { grid-template-columns: 1fr; } .writing-grid__items > :nth-child(2n) { margin-top: 0; } }
+</style>

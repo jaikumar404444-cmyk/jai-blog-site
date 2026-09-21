@@ -1,11 +1,102 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import EditorialTile from '../components/EditorialTile.astro';
+import FeatureStory from '../components/FeatureStory.astro';
 import Layout from '../layouts/Layout.astro';
+import { getPublishedArticles } from '../utils/articles';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const articles = await getPublishedArticles();
+const featured = articles.find((article) => article.data.featured) ?? articles.at(0);
+
+if (!featured) {
+	throw new Error('The homepage needs at least one published article.');
+}
+
+const selected = articles.filter((article) => article.id !== featured.id).slice(0, 2);
+const research = articles.find((article) => article.data.type === 'research');
+const discovery = articles.filter((article) => article.id !== featured.id && article.id !== research?.id).slice(2);
 ---
 
 <Layout>
-	<Welcome />
+	<section class="masthead page-frame" aria-labelledby="home-title">
+		<p class="eyebrow">Independent editorial journal · demo edition</p>
+		<h1 id="home-title" class="display-xl">JAI</h1>
+		<div class="masthead__lower">
+			<p class="masthead__statement">A journal for attentive thinking, visual studies, and work that stays open after the first reading.</p>
+			<p class="masthead__issue">Volume 01<br />A publication system in progress</p>
+		</div>
+	</section>
+
+	<section class="feature-section page-frame" aria-labelledby="feature-title">
+		<div class="section-kicker">
+			<p class="eyebrow">Featured work</p>
+			<span class="meta">01 / 05</span>
+		</div>
+		<h2 id="feature-title" class="visually-hidden">Featured work</h2>
+		<FeatureStory article={featured} priority />
+	</section>
+
+	<section class="selected-section page-frame" aria-labelledby="selected-title">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">Selected reading</p>
+				<h2 id="selected-title" class="heading-l">A few ways in.</h2>
+			</div>
+			<a class="text-link" href="/writing">All writing</a>
+		</div>
+		<div class="selected-grid">
+			{selected.map((article, index) => <EditorialTile article={article} imagePosition={index === 0 ? 'bottom' : 'top'} />)}
+		</div>
+	</section>
+
+	{research && (
+		<section class="research-section">
+			<div class="research-section__inner page-frame">
+				<p class="eyebrow">Research / special work</p>
+				<div class="research-section__grid">
+					<h2 class="display-m">{research.data.title}</h2>
+					<div>
+						<p class="body-l">{research.data.description}</p>
+						<a class="text-link" href={`/writing/${research.data.slug}`}>Enter the index</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	)}
+
+	<section class="discovery-section page-frame" aria-labelledby="discovery-title">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow">More to discover</p>
+				<h2 id="discovery-title" class="heading-l">In the margin.</h2>
+			</div>
+			<a class="text-link" href="/archive">View archive</a>
+		</div>
+		<div class="discovery-grid">
+			{discovery.map((article) => <EditorialTile article={article} />)}
+		</div>
+	</section>
 </Layout>
+
+<style>
+	.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+	.masthead { padding-top: clamp(4.5rem, 11vw, 11rem); }
+	.masthead h1 { margin-top: var(--space-3); }
+	.masthead__lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.35fr); gap: var(--space-5); align-items: end; margin-top: clamp(2.5rem, 7vw, 7rem); padding-top: var(--space-3); border-top: var(--rule); }
+	.masthead__statement { max-width: 38rem; margin: 0; font-family: var(--font-display); font-size: clamp(1.35rem, 2.4vw, 2.15rem); line-height: 1.08; letter-spacing: -0.04em; }
+	.masthead__issue { justify-self: end; margin: 0; color: var(--color-muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; line-height: 1.6; text-align: right; text-transform: uppercase; }
+	.feature-section, .selected-section, .discovery-section { margin-top: var(--space-6); }
+	.section-kicker, .section-heading { display: flex; justify-content: space-between; gap: var(--space-3); align-items: baseline; margin-bottom: var(--space-4); padding-top: var(--space-2); border-top: var(--rule); }
+	.section-kicker p, .section-heading p { margin: 0; }
+	.section-heading { align-items: end; padding-top: 0; border-top: 0; }
+	.section-heading h2 { margin-top: var(--space-1); }
+	.selected-grid { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.1fr); gap: clamp(2rem, 7vw, 7rem); max-width: 68rem; margin-left: auto; }
+	.research-section { margin-top: var(--space-6); background: var(--color-ink); color: var(--color-canvas); }
+	.research-section__inner { padding-block: var(--space-6); }
+	.research-section .eyebrow { color: var(--color-accent); }
+	.research-section__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr); gap: var(--space-5); align-items: end; margin-top: var(--space-5); }
+	.research-section .body-l { margin: 0; color: var(--color-canvas); }
+	.research-section .text-link { margin-top: var(--space-4); color: var(--color-accent); }
+	.discovery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 5vw, 5rem); max-width: 57rem; }
+	@media (max-width: 52rem) { .masthead__lower, .research-section__grid, .selected-grid { grid-template-columns: 1fr; } .masthead__issue { justify-self: start; text-align: left; } .selected-grid { max-width: none; } }
+	@media (max-width: 38rem) { .discovery-grid { grid-template-columns: 1fr; } .section-heading { align-items: start; flex-direction: column; } }
+</style>

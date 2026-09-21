@@ -1,0 +1,19 @@
+---
+import type { Article } from '../utils/articles';
+import CompactStory from './CompactStory.astro';
+
+interface Props {
+	articles: Article[];
+	start?: number;
+}
+
+const { articles, start = 1 } = Astro.props;
+---
+
+<div class="story-list">
+	{articles.map((article, index) => <CompactStory article={article} index={start + index} />)}
+</div>
+
+<style>
+	.story-list { border-bottom: var(--rule); }
+</style>

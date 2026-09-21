@@ -1,5 +1,10 @@
 // @ts-check
+import { env } from 'node:process';
 import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
 
-// https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+	output: 'static',
+	site: env.PUBLIC_SITE_URL,
+	integrations: [mdx()],
+});

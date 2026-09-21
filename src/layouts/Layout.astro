@@ -1,23 +1,54 @@
+---
+import { site } from '../data/site';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+}
+
+const { title, description = site.description, image, type = 'website' } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const socialImage = image && Astro.site ? new URL(image, Astro.site).href : image;
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		{canonical && <link rel="canonical" href={canonical} />}
+		<meta property="og:type" content={type} />
+		<meta property="og:site_name" content={site.name} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		{canonical && <meta property="og:url" content={canonical} />}
+		{socialImage && <meta property="og:image" content={socialImage} />}
+		<meta name="twitter:card" content={socialImage ? 'summary_large_image' : 'summary'} />
+		<script is:inline>
+			try {
+				const savedTheme = localStorage.getItem('jai-theme');
+				const theme = savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+				document.documentElement.dataset.theme = theme;
+			} catch {}
+		</script>
 	</head>
-	<body>
-		<slot />
+	<body data-page={Astro.url.pathname === '/' ? 'home' : Astro.url.pathname.split('/')[1]}>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		<SiteHeader />
+		<main id="main-content"><slot /></main>
+		<SiteFooter />
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
