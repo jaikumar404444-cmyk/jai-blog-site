@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { withBase } from '../utils/urls';
+---
+
+<Layout title="Page not found" description="The page you requested could not be found.">
+	<section class="not-found page-frame" aria-labelledby="not-found-title">
+		<p class="eyebrow">404 / Lost in the margin</p>
+		<h1 id="not-found-title" class="display-l">This page is not in the current issue.</h1>
+		<p class="body-l">It may have moved, been unpublished, or never existed. The collection remains close at hand.</p>
+		<a class="text-link" href={withBase('/writing')}>Browse writing</a>
+	</section>
+</Layout>
+
+<style>
+	.not-found { display: grid; align-content: center; min-height: min(58vh, 48rem); padding-block: var(--space-6); }
+	.not-found h1 { max-width: 44rem; margin-top: var(--space-3); }
+	.not-found .body-l { max-width: 34rem; margin: var(--space-4) 0 0; }
+	.not-found .text-link { width: max-content; margin-top: var(--space-4); }
+</style>
