@@ -2,7 +2,7 @@
 import SearchInterface from '../components/SearchInterface.astro';
 import Layout from '../layouts/Layout.astro';
 import { articleTypes } from '../data/site';
-import { formatDate, getPublishedArticles } from '../utils/articles';
+import { articleUrl, formatDate, getPublishedArticles } from '../utils/articles';
 
 const articles = await getPublishedArticles();
 const searchItems = articles.map((article) => ({
@@ -10,7 +10,8 @@ const searchItems = articles.map((article) => ({
 	description: article.data.description,
 	type: articleTypes[article.data.type],
 	topic: article.data.topic,
-	url: `/writing/${article.data.slug}`,
+	tags: article.data.tags,
+	url: articleUrl(article),
 	date: formatDate(article.data.date),
 }));
 ---
@@ -19,13 +20,13 @@ const searchItems = articles.map((article) => ({
 	<section class="search-page page-frame" aria-labelledby="search-title">
 		<p class="eyebrow">Find a way in</p>
 		<h1 id="search-title" class="display-l">Search</h1>
-		<p class="body-l">Search across the current demo collection. Results update as you type.</p>
+		<p class="body-l">Search across the current collection. Results update as you type.</p>
 		<SearchInterface items={searchItems} />
 	</section>
 </Layout>
 
 <style>
-	.search-page { max-width: 82rem; padding-top: var(--space-6); }
+	.search-page { padding-top: var(--space-6); }
 	.search-page h1 { margin-top: var(--space-3); }
 	.search-page > .body-l { max-width: 40rem; margin: var(--space-4) 0 var(--space-5); }
 </style>

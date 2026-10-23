@@ -1,0 +1,311 @@
+media:
+  - name: article_images
+    label: Article images
+    input: public/images/uploads
+    output: /images/uploads
+    categories: [image]
+    extensions: [jpg, jpeg, png, webp, avif, svg]
+    rename: safe
+
+settings:
+  content:
+    # Preserve schema fields added by future article-format improvements when an
+    # editor saves an existing entry through the visual form.
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "content(create): {path}"
+      update: "content(update): {path}"
+      delete: "content(delete): {path}"
+      rename: "content(rename): {oldPath} -> {newPath}"
+
+content:
+  - name: publication_settings
+    label: Publication settings
+    type: file
+    path: src/data/editorial.json
+    format: json
+    fields:
+      - name: site
+        label: Publication identity
+        type: object
+        fields:
+          - name: name
+            label: Publication name
+            type: string
+            required: true
+          - name: tagline
+            label: Tagline
+            type: string
+            required: true
+          - name: description
+            label: Site description
+            type: text
+            required: true
+      - name: home
+        label: Homepage copy
+        type: object
+        fields:
+          - name: journalLabel
+            label: Journal label
+            type: string
+            required: true
+          - name: statement
+            label: Masthead statement
+            type: text
+            required: true
+          - name: volumeLabel
+            label: Volume label
+            type: string
+            required: true
+          - name: featuredLabel
+            label: Featured section label
+            type: string
+            required: true
+          - name: selectedLabel
+            label: Selected section label
+            type: string
+            required: true
+          - name: selectedTitle
+            label: Selected section title
+            type: string
+            required: true
+          - name: allWritingLabel
+            label: All writing link label
+            type: string
+            required: true
+          - name: researchLabel
+            label: Research section label
+            type: string
+            required: true
+          - name: researchLinkLabel
+            label: Research link label
+            type: string
+            required: true
+          - name: discoveryLabel
+            label: Discovery section label
+            type: string
+            required: true
+          - name: discoveryTitle
+            label: Discovery section title
+            type: string
+            required: true
+          - name: archiveLinkLabel
+            label: Archive link label
+            type: string
+            required: true
+
+  - name: writing
+    label: Writing
+    type: collection
+    path: src/content/writing
+    format: yaml-frontmatter
+    exclude: ["a-small-atlas-of-attention.mdx"]
+    filename:
+      template: "{fields.slug}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, date, type, topic, draft, featured]
+      sort: [date, title]
+      search: [title, description, topic, tags]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: URL slug
+        type: string
+        required: true
+        pattern:
+          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          message: "Use lowercase letters, numbers, and single hyphens only."
+        description: "Used for the article URL and filename. Changing a published slug changes its link."
+      - name: description
+        label: Subtitle / description
+        type: text
+        required: true
+        options:
+          maxlength: 240
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: type
+        label: Article type
+        type: select
+        required: true
+        options:
+          values:
+            - name: essay
+              label: Essay
+            - name: research
+              label: Research
+            - name: analysis
+              label: Analysis
+            - name: visual-essay
+              label: Visual essay
+            - name: experimental
+              label: Experimental
+      - name: topic
+        label: Category
+        type: string
+        required: true
+        description: "A concise editorial category such as Attention, Archives, or Visual culture."
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+        description: "Optional keywords used for related writing and search."
+      - name: featured
+        label: Feature this article on the homepage
+        type: boolean
+        default: false
+      - name: draft
+        label: Keep as draft
+        type: boolean
+        default: true
+        description: "Drafts are saved in Git but never appear on the public site. Turn this off to publish."
+      - name: layout
+        label: Article layout
+        type: select
+        default: standard
+        options:
+          values:
+            - name: standard
+              label: Standard
+            - name: longform
+              label: Longform
+            - name: research
+              label: Research
+            - name: visual
+              label: Visual
+            - name: experimental
+              label: Experimental
+      - name: hero
+        label: Cover image
+        type: object
+        fields:
+          - name: src
+            label: Image
+            type: image
+            required: true
+            options:
+              media: article_images
+              path: public/images/uploads
+          - name: alt
+            label: Image alt text
+            type: text
+            required: true
+          - name: caption
+            label: Caption
+            type: text
+          - name: credit
+            label: Credit
+            type: string
+      - name: gallery
+        label: Image sequence / gallery
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{caption}"
+        fields:
+          - name: src
+            label: Image
+            type: image
+            required: true
+            options:
+              media: article_images
+              path: public/images/uploads
+          - name: alt
+            label: Image alt text
+            type: text
+            required: true
+          - name: caption
+            label: Caption
+            type: text
+          - name: credit
+            label: Credit
+            type: string
+      - name: related
+        label: Related articles
+        type: reference
+        options:
+          collection: writing
+          multiple: true
+          max: 3
+          search: "title,slug"
+          value: "{slug}"
+          label: "{title}"
+        description: "Optional. Otherwise, related work is chosen from matching categories and tags."
+      - name: references
+        label: References
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title}"
+        fields:
+          - name: title
+            label: Title
+            type: string
+            required: true
+          - name: author
+            label: Author
+            type: string
+          - name: publication
+            label: Publication
+            type: string
+          - name: url
+            label: URL
+            type: string
+      - name: seoTitle
+        label: SEO title
+        type: string
+        description: "Optional. Uses the article title when empty."
+      - name: seoDescription
+        label: SEO description
+        type: text
+        description: "Optional. Uses the subtitle / description when empty."
+      - name: socialImage
+        label: Social sharing image
+        type: image
+        options:
+          media: article_images
+          path: public/images/uploads
+        description: "Optional. Uses the cover image when empty."
+      - name: readingTime
+        label: Estimated reading time (minutes)
+        type: number
+        options:
+          min: 1
+      - name: demo
+        type: boolean
+        hidden: true
+        default: false
+      - name: body
+        label: Article body
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: true
+          media: article_images
+          path: public/images/uploads
+          rename: safe
+          extensions: [jpg, jpeg, png, webp, avif, svg]
+
+  - name: experimental_mdx
+    label: Experimental MDX source
+    type: file
+    path: src/content/writing/a-small-atlas-of-attention.mdx
+    format: code
+

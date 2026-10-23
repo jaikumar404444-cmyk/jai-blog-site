@@ -5,7 +5,8 @@ import StoryList from '../../components/StoryList.astro';
 import ImageGallery from '../../components/editorial/ImageGallery.astro';
 import Layout from '../../layouts/Layout.astro';
 import { articleTypes } from '../../data/site';
-import { getPublishedArticles, relatedArticles } from '../../utils/articles';
+import { articleUrl, getPublishedArticles, relatedArticles } from '../../utils/articles';
+import { withBase } from '../../utils/urls';
 
 export async function getStaticPaths() {
 	const articles = await getPublishedArticles();
@@ -33,15 +34,16 @@ const jsonLd = JSON.stringify({
 	headline: data.seoTitle ?? data.title,
 	description: data.seoDescription ?? data.description,
 	datePublished: data.date.toISOString(),
-	mainEntityOfPage: { '@type': 'WebPage', '@id': Astro.site ? new URL(`/writing/${data.slug}`, Astro.site).href : `/writing/${data.slug}` },
+	mainEntityOfPage: { '@type': 'WebPage', '@id': Astro.site ? new URL(articleUrl(article), Astro.site).href : articleUrl(article) },
 }).replace(/</g, '\\u003c');
 ---
 
 <Layout title={data.seoTitle ?? data.title} description={data.seoDescription ?? data.description} image={data.socialImage ?? data.hero?.src} type="article">
 	<script type="application/ld+json" set:html={jsonLd}></script>
+	<div class="reading-progress" data-reading-progress role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
 	<article class:list={['article-page', `article-page--${presentation}`]}>
 		<header class="article-header page-frame">
-			<p class="eyebrow">{data.demo ? 'Demo publication' : articleTypes[data.type]}</p>
+			<p class="eyebrow">{articleTypes[data.type]}</p>
 			<h1 class="display-l">{data.title}</h1>
 			<p class="article-deck">{data.description}</p>
 			<ArticleMeta article={article} />
@@ -49,7 +51,7 @@ const jsonLd = JSON.stringify({
 
 		{data.hero && (
 			<figure class="article-hero page-frame">
-				<img src={data.hero.src} alt={data.hero.alt} loading="eager" fetchpriority="high" />
+				<img src={withBase(data.hero.src)} alt={data.hero.alt} loading="eager" fetchpriority="high" />
 				{(data.hero.caption || data.hero.credit) && (
 					<figcaption>
 						{data.hero.caption && <span>{data.hero.caption}</span>}
@@ -81,7 +83,7 @@ const jsonLd = JSON.stringify({
 		)}
 
 		{related.length > 0 && (
-			<section class="article-related page-frame" aria-labelledby="related-title">
+			<section class="article-related page-frame" data-reveal aria-labelledby="related-title">
 				<div class="article-related__heading">
 					<p class="eyebrow">Continue reading</p>
 					<h2 id="related-title" class="heading-l">Related work</h2>
@@ -92,23 +94,56 @@ const jsonLd = JSON.stringify({
 	</article>
 </Layout>
 
+<script>
+	const progress = document.querySelector<HTMLElement>('[data-reading-progress]');
+	const readingSurface = document.querySelector<HTMLElement>('.article-page');
+
+	if (progress && readingSurface) {
+		let scheduled = false;
+		const updateProgress = () => {
+			const start = readingSurface.offsetTop;
+			const readableHeight = Math.max(readingSurface.offsetHeight - window.innerHeight, 1);
+			const value = Math.max(0, Math.min(100, ((window.scrollY - start) / readableHeight) * 100));
+			progress.style.setProperty('--reading-progress', String(value / 100));
+			progress.setAttribute('aria-valuenow', String(Math.round(value)));
+			scheduled = false;
+		};
+		const scheduleProgress = () => {
+			if (scheduled) return;
+			scheduled = true;
+			window.requestAnimationFrame(updateProgress);
+		};
+
+		window.addEventListener('scroll', scheduleProgress, { passive: true });
+		window.addEventListener('resize', scheduleProgress);
+		scheduleProgress();
+	}
+</script>
+
 <style>
-	.article-header { max-width: 74rem; padding-top: var(--space-6); }
-	.article-header h1 { max-width: 67rem; margin-top: var(--space-3); }
-	.article-deck { max-width: 47rem; margin: var(--space-4) 0; font-family: var(--font-display); font-size: clamp(1.35rem, 2.35vw, 2.1rem); font-weight: 410; line-height: 1.18; letter-spacing: -0.04em; }
-	.article-hero { margin-top: var(--space-5); animation: image-arrival 760ms 90ms var(--motion-editorial) both; }
+	.article-header { max-width: 70rem; padding-top: var(--space-6); }
+	.article-header h1 { max-width: 60rem; margin-top: var(--space-3); }
+	.article-deck { max-width: 43rem; margin: var(--space-4) 0; font-family: var(--font-display); font-size: clamp(1.3rem, 2.05vw, 1.95rem); font-weight: 410; line-height: 1.24; letter-spacing: -0.035em; }
+	.reading-progress { position: fixed; top: 4.75rem; right: 0; left: 0; z-index: 18; height: 2px; background: color-mix(in srgb, var(--color-rule) 60%, transparent); pointer-events: none; }
+	.reading-progress span { display: block; width: 100%; height: 100%; background: var(--color-accent); transform: scaleX(var(--reading-progress, 0)); transform-origin: left; transition: transform var(--duration-instant) linear; }
+	.article-hero { margin-top: var(--space-5); overflow: hidden; animation: image-arrival var(--duration-editorial) var(--ease-editorial) both; }
 	.article-hero img { width: 100%; max-height: 50rem; object-fit: cover; background: var(--color-surface); }
 	.article-hero figcaption { display: flex; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); color: var(--color-muted); font-size: 0.72rem; line-height: 1.45; }
 	.image-credit { flex: none; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 	.article-body { width: min(100% - (var(--page-gutter) * 2), var(--reading-width)); margin: var(--space-6) auto 0; }
-	.article-body :global(p) { margin: 0 0 1.5em; font-family: var(--font-display); font-size: clamp(1.16rem, 1.5vw, 1.34rem); font-weight: 410; line-height: 1.68; letter-spacing: -0.012em; }
+	.article-body :global(p) { margin: 0 0 1.5em; font-family: var(--font-display); font-size: clamp(1.12rem, 1.38vw, 1.28rem); font-weight: 410; line-height: 1.72; letter-spacing: -0.01em; }
+	.article-body :global(> p:first-child) { font-size: clamp(1.22rem, 1.65vw, 1.42rem); line-height: 1.6; }
 	.article-body :global(h2), .article-body :global(h3) { margin: clamp(3.5rem, 8vw, 6rem) 0 var(--space-3); font-family: var(--font-display); font-weight: 400; letter-spacing: -0.045em; }
 	.article-body :global(h2) { font-size: clamp(2rem, 3vw, 3.25rem); line-height: 0.98; }
 	.article-body :global(h3) { font-size: clamp(1.5rem, 2.2vw, 2.2rem); line-height: 1.02; }
 	.article-body :global(a) { color: var(--color-accent); text-decoration-thickness: 0.07em; }
 	.article-body :global(blockquote) { margin: clamp(3rem, 7vw, 6rem) 0; padding: var(--space-3) 0 var(--space-3) var(--space-4); border-left: 2px solid var(--color-accent); font-family: var(--font-display); font-size: clamp(1.5rem, 2.6vw, 2.45rem); line-height: 1.08; letter-spacing: -0.04em; }
+	.article-body :global(ul), .article-body :global(ol) { display: grid; gap: 0.55rem; margin: 0 0 2.1rem; padding-left: 1.3rem; font-family: var(--font-display); font-size: clamp(1.08rem, 1.3vw, 1.2rem); line-height: 1.62; }
+	.article-body :global(li::marker) { color: var(--color-accent); font-family: var(--font-utility); font-size: 0.75em; }
+	.article-body :global(strong) { font-weight: 650; }
+	.article-body :global(img) { width: 100%; margin: var(--space-5) 0; background: var(--color-surface); }
 	.article-body :global(hr) { height: 1px; margin: var(--space-5) 0; border: 0; background: var(--color-rule); }
-	.article-page--experimental .article-header { max-width: 90rem; text-align: center; }
+	.article-page--experimental .article-header { max-width: var(--page-width); text-align: center; }
 	.article-page--experimental .article-deck { margin-inline: auto; }
 	.article-page--experimental .article-body { max-width: 36rem; }
 	.article-page--research .article-body { margin-left: max(var(--page-gutter), calc((100vw - var(--page-width)) / 2 + 28rem)); }
@@ -122,5 +157,5 @@ const jsonLd = JSON.stringify({
 	.article-related__heading { display: flex; justify-content: space-between; gap: var(--space-3); align-items: end; padding-bottom: var(--space-4); border-bottom: var(--rule); }
 	.article-related__heading p { margin: 0; }
 	@media (max-width: 70rem) { .article-page--research .article-body { margin-inline: auto; } }
-	@media (max-width: 38rem) { .article-hero figcaption { flex-direction: column; gap: var(--space-1); } .article-related__heading { align-items: start; flex-direction: column; } }
+	@media (max-width: 38rem) { .reading-progress { top: 4.35rem; } .article-hero figcaption { flex-direction: column; gap: var(--space-1); } .article-related__heading { align-items: start; flex-direction: column; } }
 </style>

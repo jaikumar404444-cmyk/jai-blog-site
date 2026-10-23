@@ -1,9 +1,12 @@
 ---
+import { withBase } from '../utils/urls';
+
 interface SearchItem {
 	title: string;
 	description: string;
 	type: string;
 	topic: string;
+	tags: string[];
 	url: string;
 	date: string;
 }
@@ -21,9 +24,9 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 	<form class="search-form" role="search">
 		<label class="visually-hidden" for="site-search">Search the publication</label>
 		<input id="site-search" name="q" type="search" placeholder="Search titles, topics, or formats" autocomplete="off" enterkeyhint="search" aria-describedby="search-status" />
-		<button class="search-clear" type="button" disabled>Clear search</button>
+		<button class="search-clear" type="button" disabled aria-label="Clear search">Clear search</button>
 	</form>
-	<p id="search-status" class="search-status" aria-live="polite">Search the demo collection by title, description, type, or topic.</p>
+	<p id="search-status" class="search-status" aria-live="polite">Search the collection by title, description, type, or topic.</p>
 	<div class="search-guidance" data-search-guidance>
 		<p class="meta">Explore from a starting point</p>
 		<div class="search-suggestions">
@@ -32,23 +35,24 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 	</div>
 	<div class="search-results" aria-live="polite"></div>
 	<noscript>
-		<p class="search-noscript">Search needs JavaScript in this static first version. You can still browse every piece on the <a href="/writing">Writing page</a>.</p>
+		<p class="search-noscript">Search needs JavaScript in this static first version. You can still browse every piece on the <a href={withBase('/writing')}>Writing page</a>.</p>
 	</noscript>
 	<script id="search-index" type="application/json" set:html={serializedIndex}></script>
 </section>
 
 <script>
-	const root = document.querySelector('[data-search-interface]');
+	const root = document.querySelector<HTMLElement>('[data-search-interface]');
 
 	if (root instanceof HTMLElement) {
-		const input = root.querySelector<HTMLInputElement>('input');
-		const form = root.querySelector<HTMLFormElement>('form');
-		const clear = root.querySelector<HTMLButtonElement>('.search-clear');
-		const status = root.querySelector<HTMLElement>('.search-status');
-		const results = root.querySelector<HTMLElement>('.search-results');
-		const guidance = root.querySelector<HTMLElement>('[data-search-guidance]');
-		const suggestions = root.querySelectorAll<HTMLButtonElement>('[data-search-suggestion]');
-		const indexElement = root.querySelector<HTMLScriptElement>('#search-index');
+		const searchRoot = root;
+		const input = searchRoot.querySelector<HTMLInputElement>('input');
+		const form = searchRoot.querySelector<HTMLFormElement>('form');
+		const clear = searchRoot.querySelector<HTMLButtonElement>('.search-clear');
+		const status = searchRoot.querySelector<HTMLElement>('.search-status');
+		const results = searchRoot.querySelector<HTMLElement>('.search-results');
+		const guidance = searchRoot.querySelector<HTMLElement>('[data-search-guidance]');
+		const suggestions = searchRoot.querySelectorAll<HTMLButtonElement>('[data-search-suggestion]');
+		const indexElement = searchRoot.querySelector<HTMLScriptElement>('#search-index');
 
 		if (input && form && clear && status && results && indexElement?.textContent) {
 			const searchInput = input;
@@ -62,6 +66,7 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 				description: string;
 				type: string;
 				topic: string;
+				tags: string[];
 				url: string;
 				date: string;
 			}>;
@@ -93,13 +98,14 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 
 			function render(query: string) {
 				const normalised = query.trim().toLowerCase();
+				searchRoot.dataset.searchState = normalised ? 'results' : 'ready';
 				resultsRegion.replaceChildren();
 				clearButton.disabled = !normalised;
 				clearButton.hidden = !normalised;
 				guidance?.toggleAttribute('hidden', Boolean(normalised));
 
 				if (!normalised) {
-					statusMessage.textContent = 'Search the demo collection by title, description, type, or topic.';
+					statusMessage.textContent = 'Search the collection by title, description, type, or topic.';
 					updateUrl('');
 					return;
 				}
@@ -110,7 +116,8 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 						const type = item.type.toLowerCase();
 						const topic = item.topic.toLowerCase();
 						const description = item.description.toLowerCase();
-						const score = (title.includes(normalised) ? 4 : 0) + (topic.includes(normalised) ? 3 : 0) + (type.includes(normalised) ? 2 : 0) + (description.includes(normalised) ? 1 : 0);
+						const tags = item.tags.join(' ').toLowerCase();
+						const score = (title.includes(normalised) ? 4 : 0) + (topic.includes(normalised) ? 3 : 0) + (tags.includes(normalised) ? 3 : 0) + (type.includes(normalised) ? 2 : 0) + (description.includes(normalised) ? 1 : 0);
 						return { item, score };
 					})
 					.filter(({ score }) => score > 0)
@@ -172,11 +179,12 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 
 <style>
 	.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-	.search-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); padding-bottom: var(--space-3); border-bottom: 2px solid var(--color-ink); transition: border-color var(--motion-quick); }
-	.search-form:focus-within { border-color: var(--color-accent); }
+	.search-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); padding-bottom: var(--space-3); border-bottom: 2px solid var(--color-ink); transition: border-color var(--motion-quick), transform var(--motion-quick); }
+	.search-form:focus-within { border-color: var(--color-accent); transform: translateY(-1px); }
 	.search-form input { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--color-ink); font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 3.25rem); font-weight: 420; letter-spacing: -0.052em; }
 	.search-form input::placeholder { color: var(--color-faint); opacity: 1; }
-	.search-clear { align-self: center; min-height: 2.75rem; border: 0; background: transparent; color: var(--color-accent); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+	.search-clear { align-self: center; min-height: 2.75rem; border: 0; background: transparent; color: var(--color-accent); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; transition: color var(--motion-quick), opacity var(--motion-quick); }
+	.search-clear:disabled { cursor: default; opacity: 0; pointer-events: none; }
 	.search-clear:hover, .search-clear:focus-visible { color: var(--color-ink); }
 	.search-status { margin: var(--space-3) 0 0; color: var(--color-muted); font-size: 0.84rem; }
 	.search-guidance { margin-top: var(--space-5); }
@@ -187,12 +195,13 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 	.search-results { margin-top: var(--space-5); }
 	.search-results:not(:empty) { border-bottom: var(--rule); }
 	.search-noscript { margin-top: var(--space-4); color: var(--color-muted); }
-	:global(.search-result) { display: grid; grid-template-columns: minmax(10rem, 0.35fr) 1fr; gap: var(--space-3); padding-block: var(--space-3); border-top: var(--rule); }
+	:global(.search-result) { display: grid; grid-template-columns: minmax(10rem, 0.35fr) 1fr; gap: var(--space-3); padding-block: var(--space-3); border-top: var(--rule); animation: result-arrival var(--duration-standard) var(--ease-editorial) both; }
 	:global(.search-result__meta) { margin: 0; color: var(--color-muted); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; }
 	:global(.search-result h2) { margin: 0; font-family: var(--font-display); font-size: clamp(1.45rem, 2.5vw, 2.4rem); font-weight: 400; letter-spacing: -0.045em; line-height: 1; }
-	:global(.search-result h2 a) { text-decoration: none; }
-	:global(.search-result h2 a:hover), :global(.search-result h2 a:focus-visible) { color: var(--color-accent); }
+	:global(.search-result h2 a) { text-decoration: none; background-image: linear-gradient(currentColor, currentColor); background-position: 0 100%; background-repeat: no-repeat; background-size: 0 1px; transition: color var(--motion-quick), background-size var(--duration-standard) var(--ease-standard); }
+	:global(.search-result h2 a:hover), :global(.search-result h2 a:focus-visible) { color: var(--color-accent); background-size: 100% 1px; }
 	:global(.search-result > p:last-child) { grid-column: 2; margin: var(--space-1) 0 0; color: var(--color-muted); font-size: 0.92rem; line-height: 1.55; }
 	:global(.search-no-results) { margin: 0; padding: var(--space-4) 0; border-top: var(--rule); color: var(--color-muted); font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.55rem); letter-spacing: -0.025em; }
+	@keyframes result-arrival { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: translateY(0); } }
 	@media (max-width: 38rem) { .search-suggestions { display: grid; grid-template-columns: 1fr; gap: var(--space-1); } :global(.search-result) { grid-template-columns: 1fr; gap: var(--space-2); } :global(.search-result > p:last-child) { grid-column: auto; } }
 </style>

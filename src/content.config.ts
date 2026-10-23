@@ -18,6 +18,7 @@ const writing = defineCollection({
 		date: z.coerce.date(),
 		type: z.enum(['essay', 'research', 'analysis', 'visual-essay', 'experimental']),
 		topic: z.string().min(1),
+		tags: z.array(z.string().min(1)).default([]),
 		draft: z.boolean(),
 		demo: z.boolean().default(false),
 		featured: z.boolean().default(false),

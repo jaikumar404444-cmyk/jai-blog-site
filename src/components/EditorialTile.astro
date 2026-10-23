@@ -2,6 +2,7 @@
 import type { Article } from '../utils/articles';
 import ArticleMeta from './ArticleMeta.astro';
 import { articleUrl } from '../utils/articles';
+import { withBase } from '../utils/urls';
 
 interface Props {
 	article: Article;
@@ -13,7 +14,7 @@ const { data } = article;
 ---
 
 <article class:list={['editorial-tile', `editorial-tile--${imagePosition}`]}>
-	{data.hero && <a class="editorial-tile__image" href={articleUrl(article)} tabindex="-1" aria-hidden="true"><img src={data.hero.src} alt="" loading="lazy" /></a>}
+	{data.hero && <a class="editorial-tile__image" href={articleUrl(article)} tabindex="-1" aria-hidden="true"><img src={withBase(data.hero.src)} alt="" loading="lazy" /></a>}
 	<div class="editorial-tile__copy">
 		<ArticleMeta article={article} includeReadingTime={false} />
 		<h3 class="heading-m"><a href={articleUrl(article)}>{data.title}</a></h3>
@@ -26,12 +27,12 @@ const { data } = article;
 	.editorial-tile { display: flex; flex-direction: column; gap: var(--space-3); height: 100%; }
 	.editorial-tile--bottom .editorial-tile__image { order: 2; }
 	.editorial-tile__image { overflow: hidden; background: var(--color-surface); }
-	.editorial-tile__image img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform var(--motion-editorial); }
+	.editorial-tile__image img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transition: transform var(--duration-standard) var(--ease-standard); }
 	.editorial-tile:hover h3 a, .editorial-tile:focus-within h3 a { color: var(--color-accent); }
 	@media (hover: hover) and (pointer: fine) { .editorial-tile:hover img, .editorial-tile:focus-within img { transform: scale(1.035); } }
-	.editorial-tile__copy { display: grid; align-content: start; gap: var(--space-2); }
-	h3 a { text-decoration: none; }
-	h3 a:hover { color: var(--color-accent); }
+	.editorial-tile__copy { display: grid; flex: 1; align-content: start; gap: var(--space-2); }
+	h3 a { text-decoration: none; background-image: linear-gradient(currentColor, currentColor); background-position: 0 100%; background-repeat: no-repeat; background-size: 0 1px; transition: color var(--motion-quick), background-size var(--duration-standard) var(--ease-standard); }
+	h3 a:hover, h3 a:focus-visible, .editorial-tile:focus-within h3 a { color: var(--color-accent); background-size: 100% 1px; }
 	.editorial-tile__copy p { margin: 0; }
-	.editorial-tile .text-link { margin-top: var(--space-1); }
+	.editorial-tile .text-link { margin-top: auto; padding-top: var(--space-1); }
 </style>

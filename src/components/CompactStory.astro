@@ -26,8 +26,8 @@ const { data } = article;
 	.compact-story__number { color: var(--color-faint); font-family: var(--font-display); font-size: 1.4rem; line-height: 1; }
 	.compact-story__copy { display: grid; gap: var(--space-1); }
 	.compact-story__copy p { margin: 0; }
-	h3 a { text-decoration: none; }
-	h3 a:hover { color: var(--color-accent); }
+	h3 a { text-decoration: none; background-image: linear-gradient(currentColor, currentColor); background-position: 0 100%; background-repeat: no-repeat; background-size: 0 1px; transition: color var(--motion-quick), background-size var(--duration-standard) var(--ease-standard); }
+	h3 a:hover, h3 a:focus-visible, .compact-story:focus-within h3 a { color: var(--color-accent); background-size: 100% 1px; }
 	.compact-story__link { display: grid; width: 2.75rem; min-height: 2.75rem; place-items: center; color: var(--color-accent); font-size: 1.35rem; text-decoration: none; transition: transform var(--motion-quick), color var(--motion-quick); }
 	.compact-story:hover h3 a, .compact-story:focus-within h3 a { color: var(--color-accent); }
 	.compact-story__link:hover, .compact-story__link:focus-visible { color: var(--color-ink); transform: translate(0.12rem, -0.12rem); }

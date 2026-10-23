@@ -1,9 +1,7 @@
-export const site = {
-	name: 'JAI',
-	tagline: 'A journal for attentive thinking',
-	description:
-		'An independent editorial journal for essays, research, analysis, visual studies, and experiments.',
-};
+import editorial from './editorial.json';
+
+export const site = editorial.site;
+export const home = editorial.home;
 
 export const navigation = [
 	{ href: '/', label: 'Home' },

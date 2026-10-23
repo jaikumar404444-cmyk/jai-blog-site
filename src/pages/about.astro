@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { withBase } from '../utils/urls';
 ---
 
 <Layout title="About" description="About the JAI editorial journal and the first-version publication system.">
@@ -9,7 +10,7 @@ import Layout from '../layouts/Layout.astro';
 		<p class="body-l">JAI is being built as a personal publication with the editorial presence of a journal: considered, readable, curious, and quietly distinct.</p>
 	</section>
 
-	<section class="about-statement page-frame" aria-labelledby="statement-title">
+	<section class="about-statement page-frame" data-reveal aria-labelledby="statement-title">
 		<div class="about-statement__label">
 			<p class="eyebrow">Editorial premise</p>
 			<span class="meta">01 / 03</span>
@@ -20,7 +21,7 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 	</section>
 
-	<section class="about-grid page-frame" aria-label="Publication principles">
+	<section class="about-grid page-frame" data-reveal aria-label="Publication principles">
 		<div>
 			<p class="eyebrow">Reading</p>
 			<h2 class="heading-m">Unhurried by default.</h2>
@@ -32,16 +33,16 @@ import Layout from '../layouts/Layout.astro';
 			<p class="body-m">A story can be text-led, visual, research-driven, or deliberately unusual without losing its place in the publication.</p>
 		</div>
 		<div>
-			<p class="eyebrow">Status</p>
-			<h2 class="heading-m">A transparent demo edition.</h2>
-			<p class="body-m">Personal biography, external links, and final writing have intentionally not been invented. The current sample content exists to demonstrate the publishing system.</p>
+			<p class="eyebrow">Scope</p>
+			<h2 class="heading-m">A considered foundation.</h2>
+			<p class="body-m">Personal biography, external links, and final writing can be added when approved. The publication structure is designed to hold them without inventing claims.</p>
 		</div>
 	</section>
 
 	<section class="about-next page-frame" aria-labelledby="next-title">
 		<p class="eyebrow">Next</p>
-		<h2 id="next-title" class="display-m">Final writing and an owner-approved statement can replace this demo content without changing the architecture.</h2>
-		<a class="text-link" href="/writing">Browse the demo collection</a>
+		<h2 id="next-title" class="display-m">The publication is built to grow without changing its architecture.</h2>
+		<a class="text-link" href={withBase('/writing')}>Browse writing</a>
 	</section>
 </Layout>
 

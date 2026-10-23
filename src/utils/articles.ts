@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { withBase } from './urls';
 
 export type Article = CollectionEntry<'writing'>;
 
@@ -8,7 +9,7 @@ export async function getPublishedArticles() {
 }
 
 export function articleUrl(article: Article) {
-	return `/writing/${article.data.slug}`;
+	return withBase(`/writing/${article.data.slug}`);
 }
 
 export function formatDate(date: Date) {
@@ -38,6 +39,15 @@ export function relatedArticles(article: Article, articles: Article[]) {
 	if (explicit.length) return explicit.slice(0, 3);
 
 	return articles
-		.filter((candidate) => candidate.id !== article.id && candidate.data.topic === article.data.topic)
+		.filter((candidate) => candidate.id !== article.id)
+		.map((candidate) => ({
+			candidate,
+			score:
+				(candidate.data.topic === article.data.topic ? 2 : 0) +
+				candidate.data.tags.filter((tag) => article.data.tags.includes(tag)).length,
+		}))
+		.filter(({ score }) => score > 0)
+		.sort((first, second) => second.score - first.score || second.candidate.data.date.getTime() - first.candidate.data.date.getTime())
+		.map(({ candidate }) => candidate)
 		.slice(0, 3);
 }

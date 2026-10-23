@@ -36,9 +36,15 @@ draft: false
 
 Supported optional fields include `featured`, `hero`, `gallery`, `layout`, `related`, `references`, `readingTime`, `seoTitle`, `seoDescription`, and `socialImage`.
 
-Draft entries are deliberately excluded from every public index, archive, search result, and generated article route.
+Draft entries are deliberately excluded from every public index, archive, search result, and generated article route. Optional `tags` improve related-work matching and static search.
 
 > Astro reserves `layout` in raw MDX frontmatter for a legacy page-layout import. For MDX visual essays, leave it out and the article renderer derives the visual presentation from `type: visual-essay`. Markdown articles support the explicit layout field.
+
+## No-code publishing
+
+Normal Markdown articles and publication settings can be managed in [Pages CMS](https://app.pagescms.org) after the repository is connected to GitHub. The root `.pages.yml` provides the editor fields and sends uploaded images to `public/images/uploads/`.
+
+The GitHub Pages workflow in `.github/workflows/deploy-pages.yml` validates and deploys every push to `master`. After pushing the repository, set **Settings → Pages → Build and deployment → Source** to **GitHub Actions**, then authorize the Pages CMS GitHub App for this repository. See [the publishing workflow](04_PROJECT_SPEC/PAGES_CMS_PUBLISHING_v1.md) for the acceptance test and editorial process.
 
 ## Architecture
 

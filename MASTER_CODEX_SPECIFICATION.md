@@ -39,3 +39,19 @@ The finished site must statically build, have no broken internal links among the
 - The header remains visually quiet but stays available while reading. Mobile navigation becomes a full-height, keyboard-dismissible panel so its open state is unambiguous and does not leave underlying controls exposed.
 - Motion is intentionally limited to a brief page/image arrival, menu reveal/dismissal, image-scale feedback on pointer devices, link state changes, and an optional native theme crossfade. All motion is disabled for readers who request reduced motion.
 - Search remains a local static index. It now opens focused from navigation, supports `/` to focus and `Escape` to clear or leave the field, offers index-derived starting points, and supplies an actionable no-results state.
+
+## Layout refinement — 2026-10-10
+
+- Use a shared 82rem desktop page frame with a 40rem long-form reading measure. Article variants may vary their span within that frame but must not introduce unrelated container widths.
+- Keep the editorial spacing scale generous but bounded so adjacent homepage sections read as a sequence rather than isolated screens.
+- Use balanced two-column editorial grids for the current four-item writing collection and two-item discovery section; retain variation through module composition rather than empty grid cells.
+- Keep placeholder notes within sample article content where transparency is necessary, while removing framework-facing demo language from navigation, page introductions, metadata labels, and artwork.
+- Keep original SVG studies, but restrict their prominent colours to the publication's paper, ink, brick, olive, and muted-stone family.
+
+## No-code publishing — 2026-10-10
+
+- Pages CMS is the GitHub-connected visual editor for normal Markdown articles and publication settings. The configuration lives at the repository root in `.pages.yml`.
+- Article bodies remain Markdown-first. The existing MDX visual essay is kept as an explicit advanced source rather than being converted or edited by a Markdown rich-text form.
+- Uploaded editorial images are stored at `public/images/uploads/` and published at `/images/uploads/...`.
+- `draft: true` remains the single public publication gate. Tags are optional metadata used by static search and automatic related-work matching; explicit related links take priority.
+- Homepage article modules remain automatic. The feature is the first published entry marked `featured: true`; remaining published content is selected from the collection.

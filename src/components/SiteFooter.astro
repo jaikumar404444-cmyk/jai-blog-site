@@ -1,5 +1,6 @@
 ---
 import { navigation, site } from '../data/site';
+import { withBase } from '../utils/urls';
 ---
 
 <footer class="site-footer">
@@ -12,7 +13,7 @@ import { navigation, site } from '../data/site';
 			<div>
 				<p class="eyebrow">Navigate</p>
 				<ul class="footer-list">
-					{navigation.map((item) => <li><a class="footer-link" href={item.href}>{item.label}</a></li>)}
+					{navigation.map((item) => <li><a class="footer-link" href={withBase(item.href)}>{item.label}</a></li>)}
 				</ul>
 			</div>
 			<div>

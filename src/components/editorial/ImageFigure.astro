@@ -7,11 +7,13 @@ interface Props {
 	fullBleed?: boolean;
 }
 
+import { withBase } from '../../utils/urls';
+
 const { src, alt, caption, credit, fullBleed = false } = Astro.props;
 ---
 
 <figure class:list={['image-figure', { 'image-figure--full': fullBleed }]}>
-	<img src={src} alt={alt} loading="lazy" />
+	<img src={withBase(src)} alt={alt} loading="lazy" />
 	{(caption || credit) && (
 		<figcaption>
 			{caption && <span>{caption}</span>}

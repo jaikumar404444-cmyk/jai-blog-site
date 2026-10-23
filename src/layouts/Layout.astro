@@ -3,6 +3,7 @@ import { site } from '../data/site';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import '../styles/global.css';
+import { withBase } from '../utils/urls';
 
 interface Props {
 	title?: string;
@@ -22,10 +23,10 @@ const socialImage = image && Astro.site ? new URL(image, Astro.site).href : imag
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="preload" href={withBase('/fonts/newsreader-latin.woff2')} as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href={withBase('/fonts/instrument-sans-latin.woff2')} as="font" type="font/woff2" crossorigin />
+		<link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+		<link rel="icon" href={withBase('/favicon.ico')} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{pageTitle}</title>
 		<meta name="description" content={description} />
@@ -50,5 +51,27 @@ const socialImage = image && Astro.site ? new URL(image, Astro.site).href : imag
 		<SiteHeader />
 		<main id="main-content"><slot /></main>
 		<SiteFooter />
+		<script>
+			const root = document.documentElement;
+			root.dataset.js = 'true';
+			const revealItems = document.querySelectorAll<HTMLElement>('[data-reveal]');
+			const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if (reducedMotion || !('IntersectionObserver' in window)) {
+				revealItems.forEach((item) => item.classList.add('is-revealed'));
+			} else {
+				const observer = new IntersectionObserver(
+					(entries, activeObserver) => {
+						entries.forEach((entry) => {
+							if (!entry.isIntersecting) return;
+							(entry.target as HTMLElement).classList.add('is-revealed');
+							activeObserver.unobserve(entry.target);
+						});
+					},
+					{ threshold: 0.12, rootMargin: '0px 0px -4% 0px' }
+				);
+				revealItems.forEach((item) => observer.observe(item));
+			}
+		</script>
 	</body>
 </html>

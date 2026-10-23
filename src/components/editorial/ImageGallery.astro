@@ -10,13 +10,15 @@ interface Props {
 	images: Image[];
 }
 
+import { withBase } from '../../utils/urls';
+
 const { images } = Astro.props;
 ---
 
 <div class="image-gallery" aria-label="Image sequence">
 	{images.map((image) => (
 		<figure>
-			<img src={image.src} alt={image.alt} loading="lazy" />
+			<img src={withBase(image.src)} alt={image.alt} loading="lazy" />
 			{(image.caption || image.credit) && <figcaption>{image.caption}{image.credit && <span>{image.credit}</span>}</figcaption>}
 		</figure>
 	))}

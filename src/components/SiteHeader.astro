@@ -1,15 +1,17 @@
 ---
 import { navigation, site } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
+import { withBase } from '../utils/urls';
 
-const pathname = Astro.url.pathname;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pathname = basePath && Astro.url.pathname.startsWith(basePath) ? Astro.url.pathname.slice(basePath.length) || '/' : Astro.url.pathname;
 const isCurrent = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
-const navigationHref = (href: string) => (href === '/search' ? '/search?focus=1' : href);
+const navigationHref = (href: string) => (href === '/search' ? `${withBase('/search')}?focus=1` : withBase(href));
 ---
 
 <header class="site-header">
 	<div class="header-inner">
-		<a class="wordmark" href="/" aria-label={`${site.name}, home`}>{site.name}</a>
+		<a class="wordmark" href={withBase('/')} aria-label={`${site.name}, home`}>{site.name}</a>
 		<nav class="desktop-navigation" aria-label="Primary navigation">
 			{navigation.map((item) => (
 				<a class="nav-link" href={navigationHref(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
@@ -19,8 +21,8 @@ const navigationHref = (href: string) => (href === '/search' ? '/search?focus=1'
 		<details class="mobile-navigation" data-mobile-navigation>
 			<summary>Menu</summary>
 			<nav aria-label="Mobile navigation">
-				{navigation.map((item) => (
-					<a class="nav-link" href={navigationHref(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+				{navigation.map((item, index) => (
+					<a class="nav-link" style={`--nav-index: ${index}`} href={navigationHref(item.href)} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
 				))}
 				<ThemeToggle />
 			</nav>

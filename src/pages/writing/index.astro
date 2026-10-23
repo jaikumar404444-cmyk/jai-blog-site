@@ -15,22 +15,22 @@ const remaining = articles.slice(1);
 const topics = [...new Set(articles.map((article) => article.data.topic))];
 ---
 
-<Layout title="Writing" description="Browse the JAI demo collection of essays, research, analysis, visual essays, and experiments.">
+<Layout title="Writing" description="Browse JAI essays, research, analysis, visual essays, and experiments.">
 	<section class="writing-intro page-frame" aria-labelledby="writing-title">
-		<p class="eyebrow">The collection / demo content</p>
+		<p class="eyebrow">The collection</p>
 		<h1 id="writing-title" class="display-l">Writing</h1>
 		<div class="writing-intro__lower">
 			<p class="body-l">A growing body of work, arranged for wandering as much as for finding.</p>
-			<p class="meta">{articles.length} published demo pieces · {topics.join(' · ')}</p>
+			<p class="meta">{articles.length} published pieces · {topics.join(' · ')}</p>
 		</div>
 	</section>
 
-	<section class="writing-lead page-frame" aria-labelledby="latest-title">
+	<section class="writing-lead page-frame" data-reveal aria-labelledby="latest-title">
 		<p id="latest-title" class="eyebrow">Latest entry</p>
 		<FeatureStory article={lead} priority />
 	</section>
 
-	<section class="writing-grid page-frame" aria-labelledby="all-writing-title">
+	<section class="writing-grid page-frame" data-reveal aria-labelledby="all-writing-title">
 		<div class="writing-grid__heading">
 			<p class="eyebrow">All published work</p>
 			<h2 id="all-writing-title" class="heading-l">Browse the collection.</h2>
@@ -53,8 +53,7 @@ const topics = [...new Set(articles.map((article) => article.data.topic))];
 	.writing-grid { margin-top: var(--space-6); }
 	.writing-grid__heading { display: flex; justify-content: space-between; gap: var(--space-4); align-items: end; padding-bottom: var(--space-4); border-bottom: var(--rule); }
 	.writing-grid__heading p { margin: 0; }
-	.writing-grid__items { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(2rem, 5vw, 5rem) clamp(1.5rem, 4vw, 4.5rem); margin-top: var(--space-5); }
-	.writing-grid__items > :nth-child(3n + 2) { margin-top: clamp(2rem, 8vw, 7rem); }
-	@media (max-width: 52rem) { .writing-intro__lower { align-items: start; flex-direction: column; } .writing-intro__lower .meta { max-width: none; text-align: left; } .writing-grid__items { grid-template-columns: repeat(2, minmax(0, 1fr)); } .writing-grid__items > :nth-child(3n + 2) { margin-top: 0; } .writing-grid__items > :nth-child(2n) { margin-top: var(--space-5); } }
-	@media (max-width: 36rem) { .writing-grid__heading { align-items: start; flex-direction: column; } .writing-grid__items { grid-template-columns: 1fr; } .writing-grid__items > :nth-child(2n) { margin-top: 0; } }
+	.writing-grid__items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) clamp(1.5rem, 4vw, 4rem); margin-top: var(--space-5); }
+	@media (max-width: 52rem) { .writing-intro__lower { align-items: start; flex-direction: column; } .writing-intro__lower .meta { max-width: none; text-align: left; } }
+	@media (max-width: 36rem) { .writing-grid__heading { align-items: start; flex-direction: column; } .writing-grid__items { grid-template-columns: 1fr; } }
 </style>
