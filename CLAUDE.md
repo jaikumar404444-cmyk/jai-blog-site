@@ -112,13 +112,11 @@ references:
 related:
 ```
 
-Supported article types:
+Supported article type:
 
-- Essay
-- Research
-- Analysis
-- Visual Essay
-- Experimental
+- Article
+
+Use `topic` and optional `tags` to organise subjects. They must not create separate publication sections or authoring workflows.
 
 Possible presentation variants:
 
@@ -130,7 +128,7 @@ Possible presentation variants:
 
 Content flow must remain:
 
-`Content -> Validated Schema -> Article Type -> Layout -> Components -> Design System`
+`Content -> Validated Schema -> Article -> Layout -> Components -> Design System`
 
 Do not hard-code article content into components.
 

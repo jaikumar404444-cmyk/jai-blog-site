@@ -16,7 +16,9 @@ const writing = defineCollection({
 		slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use a lowercase URL-safe slug.'),
 		description: z.string().min(1),
 		date: z.coerce.date(),
-		type: z.enum(['essay', 'research', 'analysis', 'visual-essay', 'experimental']),
+		// A post is always an article. Categories and tags organise the collection
+		// without sending authors through separate publishing workflows.
+		type: z.literal('article').default('article'),
 		topic: z.string().min(1),
 		tags: z.array(z.string().min(1)).default([]),
 		draft: z.boolean(),

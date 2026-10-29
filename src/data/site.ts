@@ -11,11 +11,3 @@ export const navigation = [
 	{ href: '/search', label: 'Search' },
 ];
 
-export const articleTypes = {
-	essay: 'Essay',
-	research: 'Research',
-	analysis: 'Analysis',
-	'visual-essay': 'Visual essay',
-	experimental: 'Experimental',
-} as const;
-

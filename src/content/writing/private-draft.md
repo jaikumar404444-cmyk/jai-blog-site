@@ -3,7 +3,7 @@ title: "A Private Draft"
 slug: "private-draft"
 description: "A non-public demonstration of the draft workflow."
 date: 2026-09-01
-type: "essay"
+type: "article"
 topic: "Process"
 draft: true
 demo: true

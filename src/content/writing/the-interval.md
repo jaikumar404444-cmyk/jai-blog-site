@@ -3,7 +3,7 @@ title: "The Interval Between Looking and Naming"
 slug: "the-interval"
 description: "A demo analysis of the short interval in which an encounter has not yet become a label."
 date: 2026-05-22
-type: "analysis"
+type: "article"
 topic: "Visual culture"
 draft: false
 demo: true

@@ -89,28 +89,13 @@ An article may contain:
 - article navigation
 - footer
 
-The article presentation is allowed to vary by article type.
+The article presentation is allowed to vary with the material without creating a separate content type.
 
-## 6. Article Types
+## 6. Unified articles
 
-The content system should support multiple presentation modes without duplicating the underlying content.
+The publication has one Article collection. Topics and tags organise articles by subject without creating separate content systems or public sections.
 
-### Essay
-Long-form personal or literary writing.
-
-### Research
-Research-driven work with stronger source/reference structure.
-
-### Analysis
-Argument, interpretation, criticism, or analytical writing.
-
-### Visual Essay
-Writing where imagery and visual sequencing are central.
-
-### Experimental
-Unusual or art-directed work that does not fit a conventional article structure.
-
-These are content/presentation categories, not separate websites.
+Existing presentation treatments may vary when imagery or long-form reading calls for it, but the reader and editor encounter one unified publication.
 
 ## 7. Archive
 

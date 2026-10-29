@@ -1,6 +1,5 @@
 ---
 import type { Article } from '../utils/articles';
-import { articleTypes } from '../data/site';
 import { articleUrl, formatDate } from '../utils/articles';
 
 interface Props {
@@ -15,7 +14,7 @@ const { data } = article;
 <article class="compact-story">
 	{index && <span class="compact-story__number" aria-hidden="true">{String(index).padStart(2, '0')}</span>}
 	<div class="compact-story__copy">
-		<p class="meta">{articleTypes[data.type]} · {formatDate(data.date)}</p>
+		<p class="meta">{data.topic} · {formatDate(data.date)}</p>
 		<h3 class="heading-s"><a href={articleUrl(article)}>{data.title}</a></h3>
 	</div>
 	<a class="compact-story__link" href={articleUrl(article)} aria-label={`Read ${data.title}`}>↗</a>

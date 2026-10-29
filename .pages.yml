@@ -75,29 +75,8 @@ content:
             label: All writing link label
             type: string
             required: true
-          - name: researchLabel
-            label: Research section label
-            type: string
-            required: true
-          - name: researchLinkLabel
-            label: Research link label
-            type: string
-            required: true
-          - name: discoveryLabel
-            label: Discovery section label
-            type: string
-            required: true
-          - name: discoveryTitle
-            label: Discovery section title
-            type: string
-            required: true
-          - name: archiveLinkLabel
-            label: Archive link label
-            type: string
-            required: true
-
   - name: writing
-    label: Writing
+    label: Articles
     type: collection
     path: src/content/writing
     format: yaml-frontmatter
@@ -107,7 +86,7 @@ content:
       field: create
     view:
       primary: title
-      fields: [title, date, type, topic, draft, featured]
+      fields: [title, date, topic, draft, featured]
       sort: [date, title]
       search: [title, description, topic, tags]
       default:
@@ -139,26 +118,14 @@ content:
         options:
           format: yyyy-MM-dd
       - name: type
-        label: Article type
-        type: select
-        required: true
-        options:
-          values:
-            - name: essay
-              label: Essay
-            - name: research
-              label: Research
-            - name: analysis
-              label: Analysis
-            - name: visual-essay
-              label: Visual essay
-            - name: experimental
-              label: Experimental
+        type: string
+        hidden: true
+        default: article
       - name: topic
         label: Category
         type: string
         required: true
-        description: "A concise editorial category such as Attention, Archives, or Visual culture."
+        description: "A concise subject category such as Design, Finance, Books, Theology, or History."
       - name: tags
         label: Tags
         type: string
@@ -174,21 +141,9 @@ content:
         default: true
         description: "Drafts are saved in Git but never appear on the public site. Turn this off to publish."
       - name: layout
-        label: Article layout
-        type: select
+        type: string
+        hidden: true
         default: standard
-        options:
-          values:
-            - name: standard
-              label: Standard
-            - name: longform
-              label: Longform
-            - name: research
-              label: Research
-            - name: visual
-              label: Visual
-            - name: experimental
-              label: Experimental
       - name: hero
         label: Cover image
         type: object
@@ -302,10 +257,4 @@ content:
           path: public/images/uploads
           rename: safe
           extensions: [jpg, jpeg, png, webp, avif, svg]
-
-  - name: experimental_mdx
-    label: Experimental MDX source
-    type: file
-    path: src/content/writing/a-small-atlas-of-attention.mdx
-    format: code
 

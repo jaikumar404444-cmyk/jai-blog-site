@@ -3,7 +3,7 @@ title: "Notes on the Edge"
 slug: "notes-on-the-edge"
 description: "A demo experimental fragment exploring what happens when an editorial page admits its own margins."
 date: 2026-02-09
-type: "experimental"
+type: "article"
 topic: "Process"
 draft: false
 demo: true

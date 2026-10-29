@@ -2,20 +2,15 @@
   "site": {
     "name": "JAI",
     "tagline": "A journal for attentive thinking",
-    "description": "An independent editorial journal for essays, research, analysis, visual studies, and experiments."
+    "description": "An independent editorial journal for articles, ideas, and subjects worth returning to."
   },
   "home": {
     "journalLabel": "Independent editorial journal",
-    "statement": "A journal for attentive thinking, visual studies, and work that stays open after the first reading.",
+    "statement": "A journal for attentive thinking and subjects that stay open after the first reading.",
     "volumeLabel": "Volume 01",
     "featuredLabel": "Featured work",
     "selectedLabel": "Selected reading",
     "selectedTitle": "A few ways in.",
-    "allWritingLabel": "All writing",
-    "researchLabel": "Research / special work",
-    "researchLinkLabel": "Enter the index",
-    "discoveryLabel": "More to discover",
-    "discoveryTitle": "In the margin.",
-    "archiveLinkLabel": "View archive"
+    "allWritingLabel": "All writing"
   }
 }

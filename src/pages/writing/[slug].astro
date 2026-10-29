@@ -4,7 +4,6 @@ import ArticleMeta from '../../components/ArticleMeta.astro';
 import StoryList from '../../components/StoryList.astro';
 import ImageGallery from '../../components/editorial/ImageGallery.astro';
 import Layout from '../../layouts/Layout.astro';
-import { articleTypes } from '../../data/site';
 import { articleUrl, getPublishedArticles, relatedArticles } from '../../utils/articles';
 import { withBase } from '../../utils/urls';
 
@@ -26,7 +25,7 @@ const { article, articles } = Astro.props;
 const { Content } = await render(article);
 const related = relatedArticles(article, articles);
 const { data } = article;
-const presentation = data.layout === 'standard' && data.type === 'visual-essay' ? 'visual' : data.layout;
+const presentation = data.layout === 'standard' && data.gallery?.length ? 'visual' : data.layout;
 
 const jsonLd = JSON.stringify({
 	'@context': 'https://schema.org',
@@ -43,7 +42,7 @@ const jsonLd = JSON.stringify({
 	<div class="reading-progress" data-reading-progress role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
 	<article class:list={['article-page', `article-page--${presentation}`]}>
 		<header class="article-header page-frame">
-			<p class="eyebrow">{articleTypes[data.type]}</p>
+			<p class="eyebrow">{data.topic}</p>
 			<h1 class="display-l">{data.title}</h1>
 			<p class="article-deck">{data.description}</p>
 			<ArticleMeta article={article} />

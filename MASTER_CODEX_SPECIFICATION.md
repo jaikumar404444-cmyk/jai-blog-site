@@ -8,11 +8,11 @@ JAI-BLOG is a static, custom-coded contemporary editorial journal: a real public
 
 - Build with the existing Astro project, TypeScript, Markdown-first content collections, CSS custom properties, and static generation.
 - Keep content in `src/content/writing`, validate it with an Astro schema, and keep layouts/components independent of article prose.
-- Support `essay`, `research`, `analysis`, `visual-essay`, and `experimental` article types; layouts are `standard`, `longform`, `research`, `visual`, and `experimental`.
+- Use one `article` content type for all published writing. Categories and tags organise subjects such as Design, Finance, Books, Theology, and History; they do not create separate content systems. Existing presentation layouts remain available internally for already-authored work, while normal CMS entries use the standard layout.
 - Required article metadata: title, slug, date, type, and draft. Support description, topic, featured, hero/caption/credit, gallery, layout, related work, references, and SEO overrides.
 - Publish only non-draft entries to home, writing, archive, search, and generated public routes.
 - Implement `/`, `/writing`, `/writing/[slug]`, `/archive`, `/about`, and `/search`. Do not introduce a backend, CMS, contact submission endpoint, or additional public route family.
-- Compose the homepage as a curated editorial sequence: identity, a feature, selected work, a secondary text-led module, special/research work, discovery, and a quiet footer.
+- Compose the homepage as a curated editorial sequence: identity, a feature, selected articles, and a quiet footer. Do not create dedicated research, notes, observations, or experimental sections.
 - Use a two-role type system: expressive serif display typography and restrained sans-serif utility typography. Use semantic tokens for colors, type, spacing, rules, layout widths, and motion.
 - Use a systematic editorial grid with controlled asymmetry, visual pauses, thin rules, varied story modules, and varied image ratios. Do not rely on repeated cards or structural absolute positioning.
 - Treat meaningful images as content: stable dimensions, meaningful alt text, appropriate loading, hero/caption/credit support, and visual sequences/galleries where a story needs them.
@@ -51,7 +51,13 @@ The finished site must statically build, have no broken internal links among the
 ## No-code publishing — 2026-10-10
 
 - Pages CMS is the GitHub-connected visual editor for normal Markdown articles and publication settings. The configuration lives at the repository root in `.pages.yml`.
-- Article bodies remain Markdown-first. The existing MDX visual essay is kept as an explicit advanced source rather than being converted or edited by a Markdown rich-text form.
+- Article bodies remain Markdown-first. Pages CMS exposes one unified Articles collection for normal authoring; the existing MDX source remains in the repository to preserve its rendered article treatment, but is not a second CMS workflow.
 - Uploaded editorial images are stored at `public/images/uploads/` and published at `/images/uploads/...`.
 - `draft: true` remains the single public publication gate. Tags are optional metadata used by static search and automatic related-work matching; explicit related links take priority.
 - Homepage article modules remain automatic. The feature is the first published entry marked `featured: true`; remaining published content is selected from the collection.
+
+## Unified articles — 2026-10-29
+
+- The publication now uses one general Article type. Type labels have been removed from public metadata, archive entries, search results, and CMS authoring.
+- `topic` and optional `tags` are the organisational metadata for all articles and drive search and automatic related-work matching.
+- The demo article “The Slow Index” is retained as `draft: true`, so it remains available locally but is absent from all generated public output.

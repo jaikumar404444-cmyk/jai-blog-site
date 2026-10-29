@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { articleTypes } from '../data/site';
 import { articleUrl, formatDate, getPublishedArticles } from '../utils/articles';
 
 const articles = await getPublishedArticles();
@@ -31,7 +30,7 @@ const monthName = new Intl.DateTimeFormat('en', { month: 'long' });
 										<li>
 											<time class="archive-date" datetime={article.data.date.toISOString()}>{formatDate(article.data.date)}</time>
 											<a href={articleUrl(article)}>{article.data.title}</a>
-											<span class="meta">{articleTypes[article.data.type]} · {article.data.topic}</span>
+											<span class="meta">{article.data.topic}</span>
 										</li>
 									))}
 								</ul>

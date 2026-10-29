@@ -6,13 +6,13 @@ JAI-BLOG remains a static Astro publication. Pages CMS is the visual, GitHub-bac
 
 ## Content model
 
-- Normal articles live in `src/content/writing/*.md` and are edited in the **Writing** collection.
-- `src/content/writing/a-small-atlas-of-attention.mdx` remains an MDX source because it contains Astro components. It is deliberately exposed as an advanced code editor rather than converted or risked through a Markdown rich-text editor.
+- Normal articles live in `src/content/writing/*.md` and are edited in the unified **Articles** collection.
+- `src/content/writing/a-small-atlas-of-attention.mdx` remains in the repository because it contains Astro components. It is not exposed as a separate CMS workflow.
 - `draft: true` is the only publication gate. `getPublishedArticles()` filters drafts before route generation, homepage modules, the writing list, archive, related content, and the static search index are made.
-- `tags` is an optional validated list. It improves related-article selection and static search. Explicit `related` selections still take priority.
+- `topic` and optional `tags` organise the single Article collection. Tags improve related-article selection and static search; explicit `related` selections still take priority.
 - Images uploaded in the CMS go to `public/images/uploads/` and are written into content as `/images/uploads/...`, which Astro serves unchanged in the static build.
 - `src/data/editorial.json` contains editable publication identity and homepage copy. Homepage article choices are not edited manually: the first published `featured: true` article is the feature, with the newest remaining work filling the other modules.
-- The Pages CMS editor uses rich Markdown for ordinary article bodies. Cover-image and image-sequence fields provide the publication's supported caption and credit treatment; the single existing MDX visual essay stays an advanced source because it uses Astro components.
+- The Pages CMS editor uses rich Markdown for every new article. Cover-image and image-sequence fields provide the publication's supported caption and credit treatment.
 - The CMS preserves unmodeled frontmatter while saving structured entries and attributes CMS commits to the authenticated GitHub user.
 
 ## CMS setup
@@ -30,7 +30,7 @@ The hosted Pages CMS editor provides a visual rich-text editing surface, includi
 
 ## Editorial acceptance test
 
-1. In **Writing**, create a new entry. Fill in the required fields, upload a cover image, provide useful alt text, and leave **Keep as draft** on.
+1. In **Articles**, create a new entry. Fill in the required fields, upload a cover image, provide useful alt text, and leave **Keep as draft** on.
 2. Save. Confirm the committed Markdown file has `draft: true`, then run or wait for the production build. The article must be absent from `/writing`, `/archive`, `/search`, related modules, the homepage, and `/writing/<slug>`.
 3. Turn **Keep as draft** off and save. After the host deploys the commit, confirm the individual page, writing index, archive, search, and any matching tag/category related modules include the article. Turn on **Feature this article on the homepage** to make it the homepage feature.
 4. Edit the content or turn **Keep as draft** back on and save. After deployment, confirm public routes and lists follow the new state.

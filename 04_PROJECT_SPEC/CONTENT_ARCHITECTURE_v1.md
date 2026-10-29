@@ -94,31 +94,11 @@ The implementation should validate required fields.
 
 ---
 
-## 5. Article Types
+## 5. Unified article model
 
-The initial content types are:
+Every entry is an Article. The category (`topic`) and optional tags describe its subject and support navigation, search, and related-article matching; they do not create separate publication systems.
 
-### Essay
-
-Personal, literary, reflective, or argumentative long-form writing.
-
-### Research
-
-Evidence-led writing with sources, references, and stronger structural organization.
-
-### Analysis
-
-Interpretive, critical, explanatory, or analytical work.
-
-### Visual Essay
-
-Work in which images and visual sequencing are an important part of the argument or experience.
-
-### Experimental
-
-Work that intentionally breaks conventional article structure.
-
-These types should influence presentation without creating separate content systems.
+An article may use richer imagery, references, or a different existing presentation layout when its material benefits from it, but normal authoring remains one Markdown-first workflow.
 
 ---
 

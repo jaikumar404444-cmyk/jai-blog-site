@@ -3,7 +3,7 @@ title: "The Uses of a Pause"
 slug: "the-uses-of-a-pause"
 description: "A demo essay about leaving enough room around an idea for its shape to become visible."
 date: 2026-08-18
-type: "essay"
+type: "article"
 topic: "Attention"
 draft: false
 demo: true

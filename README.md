@@ -29,16 +29,16 @@ title: "Article title"
 slug: "article-title"
 description: "A useful article deck."
 date: 2026-09-20
-type: "essay" # essay | research | analysis | visual-essay | experimental
+type: "article"
 topic: "Topic"
 draft: false
 ```
 
-Supported optional fields include `featured`, `hero`, `gallery`, `layout`, `related`, `references`, `readingTime`, `seoTitle`, `seoDescription`, and `socialImage`.
+Supported optional fields include `tags`, `featured`, `hero`, `gallery`, `related`, `references`, `readingTime`, `seoTitle`, `seoDescription`, and `socialImage`. Categories and tags organise all articles; there are no separate research, notes, or experimental publishing paths.
 
 Draft entries are deliberately excluded from every public index, archive, search result, and generated article route. Optional `tags` improve related-work matching and static search.
 
-> Astro reserves `layout` in raw MDX frontmatter for a legacy page-layout import. For MDX visual essays, leave it out and the article renderer derives the visual presentation from `type: visual-essay`. Markdown articles support the explicit layout field.
+> Normal CMS articles use the standard article presentation. The existing MDX source remains as a preserved advanced example and is not part of the normal authoring workflow.
 
 ## No-code publishing
 

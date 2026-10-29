@@ -4,7 +4,6 @@ import { withBase } from '../utils/urls';
 interface SearchItem {
 	title: string;
 	description: string;
-	type: string;
 	topic: string;
 	tags: string[];
 	url: string;
@@ -17,16 +16,16 @@ interface Props {
 
 const { items } = Astro.props;
 const serializedIndex = JSON.stringify(items).replace(/</g, '\\u003c');
-const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic]))].slice(0, 5);
+const suggestions = [...new Set(items.flatMap((item) => [item.topic, ...item.tags]))].slice(0, 5);
 ---
 
 <section class="search-interface" data-search-interface aria-label="Search writing">
 	<form class="search-form" role="search">
 		<label class="visually-hidden" for="site-search">Search the publication</label>
-		<input id="site-search" name="q" type="search" placeholder="Search titles, topics, or formats" autocomplete="off" enterkeyhint="search" aria-describedby="search-status" />
+		<input id="site-search" name="q" type="search" placeholder="Search titles, topics, or tags" autocomplete="off" enterkeyhint="search" aria-describedby="search-status" />
 		<button class="search-clear" type="button" disabled aria-label="Clear search">Clear search</button>
 	</form>
-	<p id="search-status" class="search-status" aria-live="polite">Search the collection by title, description, type, or topic.</p>
+	<p id="search-status" class="search-status" aria-live="polite">Search the collection by title, description, topic, or tag.</p>
 	<div class="search-guidance" data-search-guidance>
 		<p class="meta">Explore from a starting point</p>
 		<div class="search-suggestions">
@@ -64,7 +63,6 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 			const index = JSON.parse(searchIndex.textContent) as Array<{
 				title: string;
 				description: string;
-				type: string;
 				topic: string;
 				tags: string[];
 				url: string;
@@ -84,7 +82,7 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 				article.className = 'search-result';
 				const meta = document.createElement('p');
 				meta.className = 'search-result__meta';
-				meta.textContent = `${item.type} · ${item.topic} · ${item.date}`;
+				meta.textContent = `${item.topic} · ${item.date}`;
 				const heading = document.createElement('h2');
 				const link = document.createElement('a');
 				link.href = item.url;
@@ -105,7 +103,7 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 				guidance?.toggleAttribute('hidden', Boolean(normalised));
 
 				if (!normalised) {
-					statusMessage.textContent = 'Search the collection by title, description, type, or topic.';
+					statusMessage.textContent = 'Search the collection by title, description, topic, or tag.';
 					updateUrl('');
 					return;
 				}
@@ -113,11 +111,10 @@ const suggestions = [...new Set(items.flatMap((item) => [item.type, item.topic])
 				const matched = index
 					.map((item) => {
 						const title = item.title.toLowerCase();
-						const type = item.type.toLowerCase();
 						const topic = item.topic.toLowerCase();
 						const description = item.description.toLowerCase();
 						const tags = item.tags.join(' ').toLowerCase();
-						const score = (title.includes(normalised) ? 4 : 0) + (topic.includes(normalised) ? 3 : 0) + (tags.includes(normalised) ? 3 : 0) + (type.includes(normalised) ? 2 : 0) + (description.includes(normalised) ? 1 : 0);
+						const score = (title.includes(normalised) ? 4 : 0) + (topic.includes(normalised) ? 3 : 0) + (tags.includes(normalised) ? 3 : 0) + (description.includes(normalised) ? 1 : 0);
 						return { item, score };
 					})
 					.filter(({ score }) => score > 0)

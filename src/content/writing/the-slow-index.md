@@ -3,9 +3,9 @@ title: "The Slow Index"
 slug: "the-slow-index"
 description: "A demonstration research note on catalogues, context, and the quiet work of making a body of material findable."
 date: 2026-07-03
-type: "research"
+type: "article"
 topic: "Archives"
-draft: false
+draft: true
 demo: true
 featured: false
 layout: "research"
